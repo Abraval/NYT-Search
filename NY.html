@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="en">
+​
+
+<head>
+    <meta charset="UTF-8">
+    <title>NYT Search</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
+        integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+
+    <link rel="stylesheet" href="style.css">
+    <script src="https://kit.fontawesome.com/a076d05399.js"></script>
+</head>
+
+<body>
+    <div class="jumbotron jumbotron-fluid shadow border-0 rounded mx-4 text-center text-light">
+
+        <h1 class="display-4 font-weight-bold"><i class="fas fa-newspaper px-2"></i>New York Times Search</h1>
+        ​
+    </div>
+
+    <!-- <div class="container w-100"> -->
+    <div class="card m-4 shadow">
+        <div class="card-header border bg-light text-muted mb-2">
+            <h5>Search Parameters</h5>
+        </div>
+        <div class="card-body">
+            <form>
+                <div class="form-group" id="searchInput">
+                    <label for="exampleFormControlInput1">Search Term:</label>
+                    <input type="email" class="form-control" id="exampleFormControlInput1" placeholder="">
+                </div>
+                <div class="form-group">
+                    <label for="exampleFormControlSelect1" id="numRecords">Numbers of Records to
+                        Retrieve:</label>
+                    <select class="form-control" id="exampleFormControlSelect1">
+                        <option>1</option>
+                        <option>2</option>
+                        <option>3</option>
+                        <option>4</option>
+                        <option>5</option>
+                    </select>
+                </div>
+                <div class="form-group" id="startY">
+                    <label for="exampleFormControlInput1"> Start Year (Optional):</label>
+                    <input type="email" class="form-control" id="exampleFormControlInput1" placeholder="">
+                </div>
+                ​
+                <div class="form-group" id="endY">
+                    <label for="exampleFormControlInput1">End Year (Optional):</label>
+                    <input type="email" class="form-control" id="exampleFormControlInput1" placeholder="">
+                </div>
+                ​
+                <div class="button py-2">
+                    <button type="button" class="btn btn-info btn-lg border-0 shadow" id="search-btn"><i class="fas fa-search px-2"></i>Search</button>
+                    <span><button type="button" class="btn btn-info btn-lg border-0 shadow" id="clear-btn"><i class="fas fa-trash px-2"></i>
+                            Clear Results</button></span>
+
+                    ​
+                </div>
+                ​
+            </form>
+            ​
+
+        </div>
+
+    </div>
+
+    ​
+    <!-- <div class="container" id="results"> -->
+    <div class="card mx-4 my-0 shadow">
+        <div class="card-header border bg-light text-muted mb-2">
+            <h5>Top Articles</h5>
+        </div>
+        <div class="card-body2 px-5 py-3">
+        </div>
+        ​
+    </div>
+    ​
+    <!-- </div> -->
+    ​
+    ​
+
+    ​
+    <footer class="page-footer borderr-0 rounded shadow mx-4 my-0 font-small text-light">
+
+        <div class="text-center py-3">Made with Lots and lots of <i class="fas fa-heart px-2"></i>
+
+        </div>
+
+
+
+    </footer>
+    ​
+    ​
+    ​
+    ​
+
+    ​
+    <script type="text/javascript">
+
+
+        $("#search-btn").on("click", function () {
+
+            // Grab the user input from search term and assign it to a variable in the queryURL
+            // This line grabs the input from the textbox
+
+            var searchTerm = $("#exampleFormControlInput1").val().trim();
+            console.log(searchTerm);
+            var limit = $("#exampleFormControlSelect1").val();
+            console.log(limit);
+
+            // Grab user selection from number of records to retrieve and assign it to a variable in the queryURL
+
+            // Add start and end year search funcitonality later
+            var queryURL = "https://api.nytimes.com/svc/search/v2/articlesearch.json?q=" + searchTerm + "&api-key=kJPPIhi6djlErEDbbYV5YUdat43PAwGo&limit=" + limit;
+            // We might need to change quotes
+
+            $.ajax({
+                url: queryURL,
+                method: "GET"
+            })
+                .then(function (response) {
+                    console.log(queryURL);
+                    console.log(response);
+
+
+                    for (var i = 0; i < limit; i++) {
+                        // Create a new div
+                        var articleDiv = $("<div class='article'>");
+                        articleDiv.addClass("p-3 m-3 border border-0 rounded bg-light");
+                        var varName = response.response.docs[i];
+
+                        var headline = varName.headline.main;
+                        var p4 = $("<p>").text(headline);
+                        p4.css({
+                            "padding": "2px 2px 2px 2px",
+                            "margin": "2px 2px 2px 2px",
+                            "background-color": "rgba(1, 83, 121, 0.6)",
+                            "font-weight": "bold",
+                            "font-size": "17px",
+                            "color":"white"
+                        })
+                        articleDiv.append(p4);
+
+                        var author = varName.byline.original;
+                        var p5 = $("<p>").text(author);
+                        articleDiv.append(p5);
+                        p5.css({
+                            "padding": "2px 2px 2px 2px",
+                            "font-style": "italic"
+                        })
+
+                        var pubDate = varName.pub_date;
+                        var p3 = $("<p>").text(pubDate);
+                        articleDiv.append(p3);
+                        p3.css({
+                            "padding": "2px 2px 2px 2px",
+                            "font-weight": "bold",
+                            "font-size": "10px"
+                        })
+
+                        var leadParagraph = varName.lead_paragraph;
+                        var p = $("<p>").text(leadParagraph);
+                        articleDiv.append(p);
+
+                        var webUrl = varName.web_url;
+                        var p2 = $("<p>").text(webUrl);
+                        articleDiv.append(p2);
+
+                        $(".card-body2").prepend(articleDiv);
+                        console.log(articleDiv)
+
+                    }
+                });
+
+            // We're going to need an on click function for the clear results
+
+            $("#clear-btn").on("click", function () {
+
+                $("#card-body2").empty();
+
+            });
+        });
+
+
+    </script>
+    ​
+</body>
+​
+
+</html>
